@@ -74,6 +74,7 @@ EXAMM::EXAMM(
     initialize_seed_genome();
     // make sure we don't duplicate node or edge innovation numbers
 
+    // IMPORTANT - 1
     function<void(int32_t, RNN_Genome*)> mutate_function = [=, this](int32_t max_mutations, RNN_Genome* genome) {
         this->mutate(max_mutations, genome);
     };
@@ -311,6 +312,9 @@ int32_t EXAMM::get_random_node_type() {
 }
 
 void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
+    // QUESTION -> here genome is used to set different number/types of nodes for different layers?
+    // QUESTION -> MAXIMUM node level changes i.e. mutate happen in the genome level or say using the genome class?
+    // QUESTION -> this total is for?
     double total = clone_rate + add_edge_rate + add_recurrent_edge_rate + enable_edge_rate + disable_edge_rate
                    + split_edge_rate + add_node_rate + enable_node_rate + disable_node_rate + split_node_rate
                    + merge_node_rate;
@@ -321,7 +325,11 @@ void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
 
     // g->write_graphviz("rnn_genome_premutate_" + to_string(g->get_generation_id()) + ".gv");
 
+
+    // Question -> is this mean and SD?
     g->get_mu_sigma(g->best_parameters, mu, sigma);
+
+    // QUESTION -> meaning? is this for graphical represerntation?
     g->clear_generated_by();
     // the the weights in the genome to it's best parameters
     // for epigenetic iniitalization
@@ -344,7 +352,9 @@ void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
             break;
         }
 
+        // QUESTION -> reachabilty means?
         g->assign_reachability();
+        // rng meaning?
         double rng = rng_0_1(generator) * total;
         int32_t new_node_type = get_random_node_type();
         string node_type_str = NODE_TYPES[new_node_type];
