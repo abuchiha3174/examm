@@ -49,6 +49,7 @@ IslandSpeciationStrategy::IslandSpeciationStrategy(
       transfer_learning_version(_transfer_learning_version),
       seed_stirs(_seed_stirs),
       tl_epigenetic_weights(_tl_epigenetic_weights) {
+    // meaning?
     double rate_sum = mutation_rate + intra_island_crossover_rate + inter_island_crossover_rate;
     if (rate_sum != 1.0) {
         mutation_rate = mutation_rate / rate_sum;
@@ -84,6 +85,7 @@ IslandSpeciationStrategy::IslandSpeciationStrategy(
 
 void IslandSpeciationStrategy::initialize_population(function<void(int32_t, RNN_Genome*)>& mutate) {
     for (int32_t i = 0; i < number_of_islands; i++) {
+        // QUESTION -> here max island size is for the population?
         Island* new_island = new Island(i, max_island_size);
         if (start_filled) {
             new_island->fill_with_mutated_genomes(seed_genome, seed_stirs, tl_epigenetic_weights, mutate);

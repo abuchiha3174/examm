@@ -49,10 +49,12 @@ EXAMM* generate_examm_from_arguments(
         Log::info_no_header("\n");
     }
 
+    // why create a pointer here?
     GenomeProperty* genome_property = new GenomeProperty();
     genome_property->generate_genome_property_from_arguments(arguments);
     genome_property->get_time_series_parameters(time_series_sets);
 
+    // speciation code
     SpeciationStrategy* speciation_strategy = generate_speciation_strategy_from_arguments(arguments, seed_genome);
 
     EXAMM* examm = new EXAMM(
