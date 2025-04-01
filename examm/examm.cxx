@@ -75,6 +75,8 @@ EXAMM::EXAMM(
     // make sure we don't duplicate node or edge innovation numbers
 
     // IMPORTANT - 1
+    // here this is the orginial obejct 
+    // how does it know which/where to mutate as in have the NN formed? did it form in genome?
     function<void(int32_t, RNN_Genome*)> mutate_function = [=, this](int32_t max_mutations, RNN_Genome* genome) {
         this->mutate(max_mutations, genome);
     };
@@ -312,7 +314,7 @@ int32_t EXAMM::get_random_node_type() {
 }
 
 void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
-    // QUESTION -> here genome is used to set different number/types of nodes for different layers?
+    // QUESTION -> here genome is used to set different number/types of nodes?
     // QUESTION -> MAXIMUM node level changes i.e. mutate happen in the genome level or say using the genome class?
     // QUESTION -> this total is for?
     double total = clone_rate + add_edge_rate + add_recurrent_edge_rate + enable_edge_rate + disable_edge_rate
@@ -354,7 +356,6 @@ void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
 
         // QUESTION -> reachabilty means?
         g->assign_reachability();
-        // rng meaning?
         double rng = rng_0_1(generator) * total;
         int32_t new_node_type = get_random_node_type();
         string node_type_str = NODE_TYPES[new_node_type];
