@@ -132,6 +132,10 @@ class NeatSpeciationStrategy : public SpeciationStrategy {
      */
     string get_strategy_information_values() const;
 
+    string get_size_information_headers() const;
+
+    string get_size_information_values() const ;
+
     RNN_Genome* get_global_best_genome();
 
     vector<int32_t> get_random_species_list();

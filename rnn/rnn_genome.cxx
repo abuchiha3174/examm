@@ -548,42 +548,6 @@ void RNN_Genome::set_weights(const vector<double>& parameters) {
     }
 }
 
-void RNN_Genome::print_weight_statistics() const {
-    vector<double> weights;
-    get_weights(weights);
-
-    if (weights.empty()) {
-        std::cout << "[Weight Stats] No weights found in the genome.\n";
-        return;
-    }
-
-    double sum = 0.0, sq_sum = 0.0;
-    double min_val = std::numeric_limits<double>::max();
-    double max_val = std::numeric_limits<double>::lowest();
-
-    for (double w : weights) {
-        sum += w;
-        sq_sum += w * w;
-        if (w < min_val) min_val = w;
-        if (w > max_val) max_val = w;
-    }
-
-    double mean = sum / weights.size();
-    double variance = (sq_sum / weights.size()) - (mean * mean);
-    double stddev = std::sqrt(variance);
-    double l2_norm = std::sqrt(sq_sum);
-
-    std::cout << "\n RNN Genome Weight Statistics \n";
-    std::cout << "Total Weights: " << weights.size() << "\n";
-    std::cout << "Min Weight: " << min_val << "\n";
-    std::cout << "Max Weight: " << max_val << "\n";
-    std::cout << "Mean: " << mean << "\n";
-    std::cout << "Standard Deviation: " << stddev << "\n";
-    std::cout << "L2 Norm: " << l2_norm << "\n";
-    std::cout << "\n";
-}
-
-
 int32_t RNN_Genome::get_number_inputs() {
     int32_t number_inputs = 0;
 

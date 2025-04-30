@@ -74,9 +74,6 @@ EXAMM::EXAMM(
     initialize_seed_genome();
     // make sure we don't duplicate node or edge innovation numbers
 
-    // IMPORTANT - 1
-    // here this is the orginial obejct 
-    // how does it know which/where to mutate as in have the NN formed? did it form in genome?
     function<void(int32_t, RNN_Genome*)> mutate_function = [=, this](int32_t max_mutations, RNN_Genome* genome) {
         this->mutate(max_mutations, genome);
     };
@@ -85,6 +82,7 @@ EXAMM::EXAMM(
 
     speciation_strategy->initialize_population(mutate_function);
     generate_log();
+    generate_size_count();
     startClock = std::chrono::system_clock::now();
 }
 
@@ -135,6 +133,20 @@ void EXAMM::generate_log() {
         log_file = NULL;
         op_log_file = NULL;
     }
+}
+
+void EXAMM::generate_size_count() {
+    if (output_directory != "") {
+        Log::info("Generating neural network size log\n");
+        mkpath(output_directory.c_str(), 0777);
+        size_log_file = new ofstream(output_directory + "/" + "size_log.csv");
+        (*size_log_file) << speciation_strategy->get_size_information_headers() << std::endl;
+        (*size_log_file) << speciation_strategy->get_size_information_values();
+        (*size_log_file) << endl;
+    } else {
+        size_log_file = NULL;
+    }
+
 }
 
 void EXAMM::update_op_log_statistics(RNN_Genome* genome, int32_t insert_position) {
@@ -198,6 +210,25 @@ void EXAMM::update_log() {
                     << best_genome->get_enabled_recurrent_edge_count()
                     << speciation_strategy->get_strategy_information_values() << endl;
     }
+}
+
+void EXAMM::update_size_log() {
+    if (size_log_file != NULL) {
+        // make sure the log file is still good
+        if (!size_log_file->good()) {
+            size_log_file->close();
+            delete size_log_file;
+            string output_file = output_directory + "/size_log.csv";
+            size_log_file = new ofstream(output_file, std::ios_base::app);
+            if (!size_log_file->is_open()) {
+                Log::error("could not open EXAMM output log: '%s'\n", output_file.c_str());
+                exit(1);
+            }
+        }
+    }
+
+    (*size_log_file) << speciation_strategy->get_size_information_values();
+    (*size_log_file) << endl;
 }
 
 // void EXAMM::write_memory_log(string filename) {
@@ -264,6 +295,7 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
 
     update_op_log_statistics(genome, insert_position);
     update_log();
+    update_size_log();
     return insert_position >= 0;
 }
 

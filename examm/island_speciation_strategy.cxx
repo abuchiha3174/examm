@@ -85,7 +85,6 @@ IslandSpeciationStrategy::IslandSpeciationStrategy(
 
 void IslandSpeciationStrategy::initialize_population(function<void(int32_t, RNN_Genome*)>& mutate) {
     for (int32_t i = 0; i < number_of_islands; i++) {
-        // QUESTION -> here max island size is for the population?
         Island* new_island = new Island(i, max_island_size);
         if (start_filled) {
             new_island->fill_with_mutated_genomes(seed_genome, seed_stirs, tl_epigenetic_weights, mutate);
@@ -488,6 +487,109 @@ string IslandSpeciationStrategy::get_strategy_information_values() const {
         info_value.append(to_string(best_fitness));
         info_value.append(",");
         info_value.append(to_string(worst_fitness));
+    }
+    return info_value;
+}
+
+/**
+ * Gets speciation strategy information headers for size logs
+ */
+string IslandSpeciationStrategy::get_size_information_headers() const {
+    string info_header = "";
+    static const vector<string> metric_keys = {
+        // "Inserted_Genomes",
+        "Total_Nodes",
+        "Enabled_Nodes",
+        "Total_Edges",
+        "Enabled_Edges",
+        "Total_Rec_Edges",
+        "Enabled_Rec_Edges",
+        // "Max_Node_Innovation_Count",
+        // "Max_Edge_Innovation_Count",
+        "Number_of_Weights",
+        "Number_of_Inputs",
+        "Number_of_Outputs"
+    };
+
+    for (int32_t i = 0; i < (int32_t)islands.size(); i++) {
+        for (auto& key : metric_keys) {
+            info_header.append("Island_");
+            info_header.append(std::to_string(i));
+            info_header.append("_");
+            info_header.append(key);
+            info_header.append(",");
+        }
+    }
+
+    return info_header;
+}
+
+/**
+ *  Gets speciation strategy information values for neural network size logs.
+*/
+string IslandSpeciationStrategy::get_size_information_values() const {
+    string info_value = "";
+    for (int32_t i = 0; i < (int32_t) islands.size(); i++) {
+        int32_t total_node_count            = 0;
+        int32_t enabled_node_count          = 0;
+        int32_t total_edge_count            = 0;
+        int32_t enabled_edge_count          = 0;
+        int32_t total_rec_edge_count        = 0;
+        int32_t enabled_rec_edge_count      = 0;
+        // int32_t max_node_innovation_count   = 0;
+        // int32_t max_edge_innovation_count   = 0;
+        int32_t number_of_weights           = 0;
+        int32_t number_of_inputs            = 0;
+        int32_t number_of_outputs           = 0;
+        std::vector<RNN_Genome*> gs = islands[i]->get_genomes();
+        for(RNN_Genome* g: gs){
+            total_node_count += g->get_node_count();
+            enabled_node_count += g->get_enabled_node_count();
+            total_edge_count += (int32_t) g->edges.size();
+            enabled_edge_count += g->get_enabled_edge_count();
+            total_rec_edge_count += g->get_enabled_recurrent_edge_count();
+            enabled_rec_edge_count += (int32_t) g->recurrent_edges.size();
+            number_of_weights += g->get_number_weights();
+            number_of_inputs += g->get_number_inputs();
+            number_of_outputs += g->get_number_outputs();
+        }
+        // Total nodes
+        info_value.append(std::to_string(total_node_count));
+        info_value.append(",");
+
+        // Enabled nodes
+        info_value.append(std::to_string(enabled_node_count));
+        info_value.append(",");
+
+        // Total edges
+        info_value.append(std::to_string(total_edge_count));
+        info_value.append(",");
+
+        // Enabled edges
+        info_value.append(std::to_string(enabled_edge_count));
+        info_value.append(",");
+
+        // Total recurrent edges
+        info_value.append(std::to_string(total_rec_edge_count));
+        info_value.append(",");
+
+        // Enabled recurrent edges
+        info_value.append(std::to_string(enabled_rec_edge_count));
+        info_value.append(",");
+
+        // Number of weights
+        info_value.append(std::to_string(number_of_weights));
+        info_value.append(",");
+
+        // Number of inputs
+        info_value.append(std::to_string(number_of_inputs));
+        info_value.append(",");
+
+        // Number of outputs
+        info_value.append(std::to_string(number_of_outputs));
+
+        // now info_value is “<total>,<enabled>,<totalEdges>,<enabledEdges>,<totalRecEdges>,<enabledRecEdges>,<weights>,<inputs>,<outputs>”
+
     }
     return info_value;
 }

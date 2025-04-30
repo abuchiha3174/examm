@@ -70,6 +70,14 @@ int32_t NeatSpeciationStrategy::get_generated_genomes() const {
     return generated_genomes;
 }
 
+string  NeatSpeciationStrategy::get_size_information_values() const {
+    return "";
+}
+
+string  NeatSpeciationStrategy::get_size_information_headers() const {
+    return "";
+}
+
 int32_t NeatSpeciationStrategy::get_evaluated_genomes() const {
     return evaluated_genomes;
 }

@@ -72,6 +72,7 @@ class EXAMM {
 
     string output_directory;
     ofstream* log_file;
+    ofstream* size_log_file;
     ofstream* op_log_file;
 
     std::chrono::time_point<std::chrono::system_clock> startClock;
@@ -90,6 +91,7 @@ class EXAMM {
 
     void print();
     void update_log();
+    void update_size_log();
 
     void set_possible_node_types(vector<string> possible_node_type_strings);
 
@@ -126,6 +128,7 @@ class EXAMM {
 
     void check_weight_initialize_validity();
     void generate_log();
+    void generate_size_count();
     void set_evolution_hyper_parameters();
     void initialize_seed_genome();
     void update_op_log_statistics(RNN_Genome* genome, int32_t insert_position);

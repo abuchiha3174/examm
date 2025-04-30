@@ -210,6 +210,16 @@ class IslandSpeciationStrategy : public SpeciationStrategy {
     string get_strategy_information_values() const;
 
     /**
+     *  Gets speciation strategy information headers for neural network size logs.
+    */
+    virtual string get_size_information_headers() const;
+
+    /**
+     *  Gets speciation strategy information values for neural network size logs.
+    */
+    virtual string get_size_information_values() const;
+
+    /**
      * Island repopulation through two random parents from two seperate islands,
      * parents can be random genomes or best genome from the island
      */

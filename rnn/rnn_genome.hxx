@@ -157,7 +157,6 @@ class RNN_Genome {
 
     void get_weights(vector<double>& parameters);
     void set_weights(const vector<double>& parameters);
-   void print_weight_statistics() const;
 
     int32_t get_number_weights();
     int32_t get_number_inputs();
