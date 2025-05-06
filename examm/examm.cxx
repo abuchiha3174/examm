@@ -63,6 +63,7 @@ EXAMM::EXAMM(
     edge_innovation_count = 0;
     node_innovation_count = 0;
     generate_op_log = false;
+    generate_best_genome_size_log = true;
 
     int32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
     generator = minstd_rand0(seed);
@@ -139,12 +140,21 @@ void EXAMM::generate_size_count() {
     if (output_directory != "") {
         Log::info("Generating neural network size log\n");
         mkpath(output_directory.c_str(), 0777);
-        size_log_file = new ofstream(output_directory + "/" + "size_log.csv");
-        (*size_log_file) << speciation_strategy->get_size_information_headers() << std::endl;
-        (*size_log_file) << speciation_strategy->get_size_information_values();
-        (*size_log_file) << endl;
+        std::string size_dir = output_directory + "/" + "size_log";
+        mkpath(size_dir.c_str(), 0777);
+        size_log_file = new ofstream(size_dir+ "/" + "size_log.csv");
+        (*size_log_file) << speciation_strategy->get_size_information_headers() << endl;
+        // (*size_log_file) << endl;
+        (*size_log_file) << speciation_strategy->get_size_information_values() << endl;
+        // (*size_log_file) << endl;
+        if(generate_best_genome_size_log){
+            best_genome_size_log = new ofstream(size_dir+ "/" + "best_genome_size_log.csv");
+            (*best_genome_size_log) << speciation_strategy->get_best_genome_size_information_headers() << endl;;
+            // (*best_genome_size_log) 
+        }
     } else {
         size_log_file = NULL;
+        best_genome_size_log = NULL;
     }
 
 }
@@ -227,8 +237,10 @@ void EXAMM::update_size_log() {
         }
     }
 
-    (*size_log_file) << speciation_strategy->get_size_information_values();
-    (*size_log_file) << endl;
+    (*size_log_file) << speciation_strategy->get_size_information_values() << endl;;
+    // (*size_log_file)
+    (*best_genome_size_log) << speciation_strategy->get_best_genome_size_information_values() << endl;
+    // (*best_genome_size_log) << endl;
 }
 
 // void EXAMM::write_memory_log(string filename) {
@@ -346,9 +358,6 @@ int32_t EXAMM::get_random_node_type() {
 }
 
 void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
-    // QUESTION -> here genome is used to set different number/types of nodes?
-    // QUESTION -> MAXIMUM node level changes i.e. mutate happen in the genome level or say using the genome class?
-    // QUESTION -> this total is for?
     double total = clone_rate + add_edge_rate + add_recurrent_edge_rate + enable_edge_rate + disable_edge_rate
                    + split_edge_rate + add_node_rate + enable_node_rate + disable_node_rate + split_node_rate
                    + merge_node_rate;
@@ -360,10 +369,8 @@ void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
     // g->write_graphviz("rnn_genome_premutate_" + to_string(g->get_generation_id()) + ".gv");
 
 
-    // Question -> is this mean and SD?
     g->get_mu_sigma(g->best_parameters, mu, sigma);
 
-    // QUESTION -> meaning? is this for graphical represerntation?
     g->clear_generated_by();
     // the the weights in the genome to it's best parameters
     // for epigenetic iniitalization
@@ -386,7 +393,6 @@ void EXAMM::mutate(int32_t max_mutations, RNN_Genome* g) {
             break;
         }
 
-        // QUESTION -> reachabilty means?
         g->assign_reachability();
         double rng = rng_0_1(generator) * total;
         int32_t new_node_type = get_random_node_type();

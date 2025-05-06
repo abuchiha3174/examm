@@ -49,7 +49,7 @@ IslandSpeciationStrategy::IslandSpeciationStrategy(
       transfer_learning_version(_transfer_learning_version),
       seed_stirs(_seed_stirs),
       tl_epigenetic_weights(_tl_epigenetic_weights) {
-    // meaning?
+
     double rate_sum = mutation_rate + intra_island_crossover_rate + inter_island_crossover_rate;
     if (rate_sum != 1.0) {
         mutation_rate = mutation_rate / rate_sum;
@@ -496,22 +496,16 @@ string IslandSpeciationStrategy::get_strategy_information_values() const {
  */
 string IslandSpeciationStrategy::get_size_information_headers() const {
     string info_header = "";
-    static const vector<string> metric_keys = {
-        // "Inserted_Genomes",
-        "Total_Nodes",
-        "Enabled_Nodes",
-        "Total_Edges",
-        "Enabled_Edges",
-        "Total_Rec_Edges",
-        "Enabled_Rec_Edges",
-        // "Max_Node_Innovation_Count",
-        // "Max_Edge_Innovation_Count",
-        "Number_of_Weights",
-        "Number_of_Inputs",
-        "Number_of_Outputs"
-    };
-
-    for (int32_t i = 0; i < (int32_t)islands.size(); i++) {
+    static const vector<string> metric_keys = {"Total_Genomes",
+                                               "Total_Nodes",
+                                               "Enabled_Nodes",
+                                               "Enabled_Hidden_Layer_Nodes",
+                                               "Disabled_Hidden_Layer_Nodes",
+                                               "Total_Edges",
+                                               "Enabled_Edges",
+                                               "Total_Rec_Edges",
+                                               "Enabled_Rec_Edges"};
+    for (int32_t i = 0; i < (int32_t) islands.size(); i++) {
         for (auto& key : metric_keys) {
             info_header.append("Island_");
             info_header.append(std::to_string(i));
@@ -525,40 +519,82 @@ string IslandSpeciationStrategy::get_size_information_headers() const {
 }
 
 /**
+ * Gets speciation strategy information values for neural network size logs of best genome.
+ */
+string IslandSpeciationStrategy::get_best_genome_size_information_headers() const {
+    string info_header = "";
+    static const vector<string> metric_keys = {
+        "Generation_ID",
+        "Total_Nodes",
+        "Enabled_Nodes",
+        "Enabled_Hidden_Layer_Nodes",
+        "Disabled_Hidden_Layer_Nodes",
+        "Total_Edges",
+        "Enabled_Edges",
+        "Total_Rec_Edges",
+        "Enabled_Rec_Edges",
+        "Fitness",
+        "Best_Validation_MSE",
+        "Best_Validation_MAE",
+    };
+
+    for (int32_t i = 0; i < (int32_t) islands.size(); i++) {
+        for (const auto& key : metric_keys) {
+            info_header.append("Island_");
+            info_header.append(std::to_string(i));
+            info_header.append("_Best_Genome_");
+            info_header.append(key);
+            info_header.append(",");
+        }
+    }
+
+    return info_header;
+}
+
+/**
  *  Gets speciation strategy information values for neural network size logs.
-*/
+ */
 string IslandSpeciationStrategy::get_size_information_values() const {
     string info_value = "";
     for (int32_t i = 0; i < (int32_t) islands.size(); i++) {
-        int32_t total_node_count            = 0;
-        int32_t enabled_node_count          = 0;
-        int32_t total_edge_count            = 0;
-        int32_t enabled_edge_count          = 0;
-        int32_t total_rec_edge_count        = 0;
-        int32_t enabled_rec_edge_count      = 0;
-        // int32_t max_node_innovation_count   = 0;
-        // int32_t max_edge_innovation_count   = 0;
-        int32_t number_of_weights           = 0;
-        int32_t number_of_inputs            = 0;
-        int32_t number_of_outputs           = 0;
+        int32_t total_node_count = 0;
+        int32_t enabled_node_count = 0;
+        int32_t enabled_hidden_layer_node_count = 0;
+        int32_t disabled_hidden_layer_node_count = 0;
+        int32_t total_edge_count = 0;
+        int32_t enabled_edge_count = 0;
+        int32_t total_rec_edge_count = 0;
+        int32_t enabled_rec_edge_count = 0;
+        int32_t number_of_weights = 0;
+        int32_t total_genomes = 0;
         std::vector<RNN_Genome*> gs = islands[i]->get_genomes();
-        for(RNN_Genome* g: gs){
+        for (RNN_Genome* g : gs) {
             total_node_count += g->get_node_count();
             enabled_node_count += g->get_enabled_node_count();
+            enabled_hidden_layer_node_count += g->get_enabled_node_count_hidden_layer();
+            disabled_hidden_layer_node_count += g->get_disabled_node_count_hidden_layer();
             total_edge_count += (int32_t) g->edges.size();
             enabled_edge_count += g->get_enabled_edge_count();
-            total_rec_edge_count += g->get_enabled_recurrent_edge_count();
-            enabled_rec_edge_count += (int32_t) g->recurrent_edges.size();
-            number_of_weights += g->get_number_weights();
-            number_of_inputs += g->get_number_inputs();
-            number_of_outputs += g->get_number_outputs();
+            total_rec_edge_count += (int32_t) g->recurrent_edges.size();
+            enabled_rec_edge_count += g->get_enabled_recurrent_edge_count();
+            total_genomes += 1;
         }
+        // Total genomes
+        info_value.append(std::to_string(total_genomes));
+        info_value.append(",");
+
         // Total nodes
         info_value.append(std::to_string(total_node_count));
         info_value.append(",");
 
         // Enabled nodes
         info_value.append(std::to_string(enabled_node_count));
+        info_value.append(",");
+
+        // Hidden layer nodes
+        info_value.append(std::to_string(enabled_hidden_layer_node_count));
+        info_value.append(",");
+        info_value.append(std::to_string(disabled_hidden_layer_node_count));
         info_value.append(",");
 
         // Total edges
@@ -575,22 +611,91 @@ string IslandSpeciationStrategy::get_size_information_values() const {
 
         // Enabled recurrent edges
         info_value.append(std::to_string(enabled_rec_edge_count));
-        info_value.append(",");
 
         // Number of weights
-        info_value.append(std::to_string(number_of_weights));
+        // info_value.append(std::to_string(number_of_weights));
         info_value.append(",");
 
-        // Number of inputs
-        info_value.append(std::to_string(number_of_inputs));
-        info_value.append(",");
-
-        // Number of outputs
-        info_value.append(std::to_string(number_of_outputs));
-
-        // now info_value is “<total>,<enabled>,<totalEdges>,<enabledEdges>,<totalRecEdges>,<enabledRecEdges>,<weights>,<inputs>,<outputs>”
-
+        // now info_value is
+        // “<total>,<enabled>,<totalEdges>,<enabledEdges>,<totalRecEdges>,<enabledRecEdges>,<weights>,<inputs>,<outputs>”
     }
+    return info_value;
+}
+
+/**
+ * Gets speciation strategy information values for neural network size logs of best genomes.
+ */
+string IslandSpeciationStrategy::get_best_genome_size_information_values() const {
+    string info_value = "";
+
+    for (int32_t i = 0; i < (int32_t) islands.size(); i++) {
+        int32_t generation_id = -1;
+        int32_t total_node_count = 0;
+        int32_t enabled_node_count = 0;
+        int32_t enabled_hidden_layer_node_count = 0;
+        int32_t disabled_hidden_layer_node_count = 0;
+        int32_t total_edge_count = 0;
+        int32_t enabled_edge_count = 0;
+        int32_t total_rec_edge_count = 0;
+        int32_t enabled_rec_edge_count = 0;
+        double fitness = -1;
+        double best_mse = -1;
+        double best_mae = -1;
+
+        RNN_Genome* best = islands[i]->get_best_genome();
+
+        if (best != NULL) {
+            generation_id = best->get_generation_id();
+            total_node_count = best->get_node_count();
+            enabled_node_count = best->get_enabled_node_count();
+            enabled_hidden_layer_node_count = best->get_enabled_node_count_hidden_layer();
+            disabled_hidden_layer_node_count = best->get_disabled_node_count_hidden_layer();
+            total_edge_count = (int32_t) best->edges.size();
+            enabled_edge_count = best->get_enabled_edge_count();
+            total_rec_edge_count = (int32_t) best->recurrent_edges.size();
+            enabled_rec_edge_count = best->get_enabled_recurrent_edge_count();
+            fitness = best->get_fitness();
+            best_mse = best->get_best_validation_mse();
+            best_mae = best->get_best_validation_mae();
+        }
+
+        info_value.append(std::to_string(generation_id));
+        info_value.append(",");
+
+        info_value.append(std::to_string(total_node_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(enabled_node_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(enabled_hidden_layer_node_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(disabled_hidden_layer_node_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(total_edge_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(enabled_edge_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(total_rec_edge_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(enabled_rec_edge_count));
+        info_value.append(",");
+
+        info_value.append(std::to_string(fitness));
+        info_value.append(",");
+
+        info_value.append(std::to_string(best_mse));
+        info_value.append(",");
+
+        info_value.append(std::to_string(best_mae));
+        info_value.append(",");
+    }
+
     return info_value;
 }
 

@@ -41,6 +41,7 @@ class EXAMM {
     map<string, int32_t> generated_from_map;
 
     bool generate_op_log;
+    bool generate_best_genome_size_log;
 
     minstd_rand0 generator;
     uniform_real_distribution<double> rng_0_1;
@@ -73,6 +74,7 @@ class EXAMM {
     string output_directory;
     ofstream* log_file;
     ofstream* size_log_file;
+    ofstream* best_genome_size_log;
     ofstream* op_log_file;
 
     std::chrono::time_point<std::chrono::system_clock> startClock;
