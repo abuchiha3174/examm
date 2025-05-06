@@ -70,6 +70,30 @@ int32_t NeatSpeciationStrategy::get_generated_genomes() const {
     return generated_genomes;
 }
 
+string  NeatSpeciationStrategy::get_size_information_values() const {
+    return "";
+}
+
+string  NeatSpeciationStrategy::get_size_information_headers() const {
+    return "";
+}
+
+
+/**
+ * Gets speciation strategy information headers for best genome size logs.
+*/
+string NeatSpeciationStrategy::get_best_genome_size_information_headers() const {
+    return "";
+}
+
+/**
+ * Gets speciation strategy information values for best genome size logs.
+*/
+string NeatSpeciationStrategy::get_best_genome_size_information_values() const {
+    return "";
+}
+
+
 int32_t NeatSpeciationStrategy::get_evaluated_genomes() const {
     return evaluated_genomes;
 }

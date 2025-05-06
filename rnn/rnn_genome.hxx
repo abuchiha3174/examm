@@ -124,6 +124,10 @@ class RNN_Genome {
     int32_t get_enabled_node_count();
     int32_t get_node_count();
 
+    // For Size count at hidden layer level
+    int32_t get_enabled_node_count_hidden_layer();
+    int32_t get_disabled_node_count_hidden_layer();
+
     double get_fitness() const;
     double get_best_validation_softmax() const;
     double get_best_validation_mse() const;
@@ -157,6 +161,7 @@ class RNN_Genome {
 
     void get_weights(vector<double>& parameters);
     void set_weights(const vector<double>& parameters);
+   void print_weight_statistics() const;
 
     int32_t get_number_weights();
     int32_t get_number_inputs();

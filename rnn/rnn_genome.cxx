@@ -318,6 +318,34 @@ int32_t RNN_Genome::get_enabled_node_count() {
     return count;
 }
 
+// Get the total number of nodes that are in hidden layer enabled
+int32_t RNN_Genome::get_enabled_node_count_hidden_layer() {
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if ((nodes[i]->is_enabled()) && 
+                (nodes[i]->layer_type == 1)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// Get the total number of nodes that are in hidden layer but dsiabled 
+int32_t RNN_Genome::get_disabled_node_count_hidden_layer() {
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if (!(nodes[i]->is_enabled()) 
+                && (nodes[i]->layer_type == 1)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
 int32_t RNN_Genome::get_enabled_node_count(int32_t node_type) {
     int32_t count = 0;
 
