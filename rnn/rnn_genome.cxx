@@ -594,6 +594,31 @@ int32_t RNN_Genome::get_number_weights() {
     return number_weights;
 }
 
+int32_t RNN_Genome::get_enabled_weights() {
+    int32_t number_weights = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if (nodes[i]->enabled) {
+            number_weights += nodes[i]->get_number_weights();
+        }
+    }
+
+    for (int32_t i = 0; i < (int32_t) edges.size(); i++) {
+        if (edges[i]->enabled) {
+            number_weights++;
+        }
+    }
+
+    for (int32_t i = 0; i < (int32_t) recurrent_edges.size(); i++) {
+        if (recurrent_edges[i]->enabled) {
+            number_weights++;
+        }
+    }
+
+    return number_weights;
+}
+
+
 double RNN_Genome::get_avg_edge_weight() {
     double avg_weight;
     double weights = 0;
