@@ -618,6 +618,82 @@ int32_t RNN_Genome::get_enabled_weights() {
     return number_weights;
 }
 
+// Get the total number of nodes that are in hidden layer enabled
+int32_t RNN_Genome::get_enabled_node_count_hidden_layer() {
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if ((nodes[i]->is_enabled()) && (nodes[i]->layer_type == HIDDEN_LAYER)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// Get the total number of nodes that are in hidden layer but disabled
+int32_t RNN_Genome::get_disabled_node_count_hidden_layer() {
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if (!(nodes[i]->is_enabled()) && (nodes[i]->layer_type == HIDDEN_LAYER)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// Get the total number of parameters that are in hidden layer and enabled
+int32_t RNN_Genome::get_number_weights_enabled_hidden_layer_node() {
+    int32_t number_weights = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if ((nodes[i]->is_enabled()) && (nodes[i]->layer_type == HIDDEN_LAYER)) {
+            number_weights += nodes[i]->get_number_weights();
+        }
+    }
+
+    // number_weights += get_enabled_edge_count();
+    // number_weights += get_enabled_recurrent_edge_count();
+
+    for (int32_t i = 0; i < (int32_t) edges.size(); i++) {
+        number_weights++;
+    }
+
+    for (int32_t i = 0; i < (int32_t) recurrent_edges.size(); i++) {
+        number_weights++;
+    }
+
+    return number_weights;
+}
+
+int32_t RNN_Genome::get_enabled_number_weights() {
+    int32_t number_weights = 0;
+
+    for (int32_t i = 0; i < (int32_t) nodes.size(); i++) {
+        if (nodes[i]->enabled) {
+            number_weights += nodes[i]->get_number_weights();
+        }
+        // if (nodes[i]->is_reachable()) number_weights += nodes[i]->get_number_weights();
+    }
+
+    for (int32_t i = 0; i < (int32_t) edges.size(); i++) {
+        if (edges[i]->enabled) {
+            number_weights++;
+        }
+        // if (edges[i]->is_reachable()) number_weights++;
+    }
+
+    for (int32_t i = 0; i < (int32_t) recurrent_edges.size(); i++) {
+        if (recurrent_edges[i]->enabled) {
+            number_weights++;
+        }
+        // if (recurrent_edges[i]->is_reachable()) number_weights++;
+    }
+
+    return number_weights;
+}
 
 double RNN_Genome::get_avg_edge_weight() {
     double avg_weight;

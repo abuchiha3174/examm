@@ -174,6 +174,11 @@ class RNN_Genome {
     double get_kaiming_weight(RNN_Node_Interface* output_node);
     double get_random_weight();
 
+    int32_t get_enabled_node_count_hidden_layer();
+    int32_t get_disabled_node_count_hidden_layer();
+    int32_t get_number_weights_enabled_hidden_layer_node();
+    int32_t get_enabled_number_weights();
+
     void get_input_edges(
         int32_t node_innovation, vector<RNN_Edge*>& input_edges, vector<RNN_Recurrent_Edge*>& input_recurrent_edges
     );

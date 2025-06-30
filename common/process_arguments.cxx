@@ -128,11 +128,14 @@ IslandSpeciationStrategy* generate_island_speciation_strategy_from_arguments(
     bool start_filled = argument_exists(arguments, "--start_filled");
     bool tl_epigenetic_weights = argument_exists(arguments, "--tl_epigenetic_weights");
 
+    vector<string> possible_node_types;
+    get_argument_vector(arguments, "--possible_node_types", false, possible_node_types);
+
     IslandSpeciationStrategy* island_strategy = new IslandSpeciationStrategy(
         number_islands, island_size, mutation_rate, intra_island_co_rate, inter_island_co_rate, seed_genome,
         island_ranking_method, repopulation_method, extinction_event_generation_number, num_mutations,
         islands_to_exterminate, max_genomes, repeat_extinction, start_filled, transfer_learning,
-        transfer_learning_version, seed_stirs, tl_epigenetic_weights
+        transfer_learning_version, seed_stirs, tl_epigenetic_weights, possible_node_types
     );
 
     return island_strategy;
