@@ -12,7 +12,7 @@ cd build
 INPUT_PARAMETERS="Conditioner_Inlet_Temp Conditioner_Outlet_Temp Coal_Feeder_Rate Primary_Air_Flow Primary_Air_Split System_Secondary_Air_Flow_Total Secondary_Air_Flow Secondary_Air_Split Tertiary_Air_Split Total_Comb_Air_Flow Supp_Fuel_Flow Main_Flm_Int" 
 OUTPUT_PARAMETERS="Main_Flm_Int" 
 
-exp_name="../test_output/coal_mpi"
+exp_name="../test_output/coal_mpi_patience_2"
 mkdir -p $exp_name
 echo "Running base EXAMM code with coal dataset, results will be saved to: "$exp_name
 echo "###-------------------###"
@@ -24,7 +24,9 @@ mpirun -np 4 ./mpi/examm_mpi \
 --output_parameter_names $OUTPUT_PARAMETERS \
 --number_islands 10 \
 --island_size 10 \
---max_genomes 2000 \
+--max_genomes 4000 \
+--patience 2 \
+--patience_rate 200 \
 --bp_iterations 5 \
 --output_directory $exp_name \
 --num_mutations 2 \

@@ -1214,6 +1214,20 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
     return info_value;
 }
 
+/**
+ * Get current position of genome in the population
+ */
+int32_t IslandSpeciationStrategy::get_position_in_population(RNN_Genome* genome){
+    int32_t position = 0;
+    for(RNN_Genome* g : islands[genome->get_group_id()]->get_genomes()){
+        if(g->get_generation_id() == genome->get_generation_id()){
+            break;
+        }
+        position++;
+    }
+    return position;
+}
+
 
 RNN_Genome* IslandSpeciationStrategy::parents_repopulation(
     string method, uniform_real_distribution<double>& rng_0_1, minstd_rand0& generator,

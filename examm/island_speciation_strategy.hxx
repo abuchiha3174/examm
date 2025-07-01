@@ -264,6 +264,10 @@ class IslandSpeciationStrategy : public SpeciationStrategy {
      */
     string generate_genome_size_values(RNN_Genome* new_genome, int32_t generated_genomes);
 
+    /**
+     * Get current position of genome in the population
+     */
+    int32_t get_position_in_population(RNN_Genome* genome);
 
     /**
      * Island repopulation through two random parents from two seperate islands,

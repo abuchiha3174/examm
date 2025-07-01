@@ -11,6 +11,9 @@ using std::uniform_real_distribution;
 
 class SpeciationStrategy {
    public:
+    double mutation_rate;
+    double intra_island_co_rate; 
+    double inter_island_co_rate;
     /**
      * \return the number of generated genomes.
      */
@@ -127,6 +130,8 @@ class SpeciationStrategy {
      * Get the complete generate genome values
      */
     virtual string generate_genome_size_values(RNN_Genome* new_genome, int32_t generated_genomes) = 0;
+
+    virtual int32_t get_position_in_population(RNN_Genome* genome) = 0;
 
     virtual RNN_Genome* get_global_best_genome() = 0;
     virtual void initialize_population(function<void(int32_t, RNN_Genome*)>& mutate) = 0;

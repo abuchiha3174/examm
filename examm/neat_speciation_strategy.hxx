@@ -166,6 +166,8 @@ class NeatSpeciationStrategy : public SpeciationStrategy {
      */
     string generate_genome_size_values(RNN_Genome* new_genome, int32_t generated_genomes);
 
+    int32_t get_position_in_population(RNN_Genome* genome);
+
 
     RNN_Genome* get_global_best_genome();
 

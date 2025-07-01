@@ -461,6 +461,13 @@ string NeatSpeciationStrategy::generate_genome_size_values(RNN_Genome* new_genom
     return "";
 };
 
+/**
+ * Get current position of genome in the population
+ */
+int32_t NeatSpeciationStrategy::get_position_in_population(RNN_Genome* genome){
+    return -1;
+}
+
 RNN_Genome* NeatSpeciationStrategy::get_global_best_genome() {
     return global_best_genome;
 }
