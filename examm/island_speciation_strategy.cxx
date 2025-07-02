@@ -1217,15 +1217,20 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
 /**
  * Get current position of genome in the population
  */
-int32_t IslandSpeciationStrategy::get_position_in_population(RNN_Genome* genome){
+int32_t IslandSpeciationStrategy::get_position_in_population(int32_t generation_id, int32_t group_id) {
     int32_t position = 0;
-    for(RNN_Genome* g : islands[genome->get_group_id()]->get_genomes()){
-        if(g->get_generation_id() == genome->get_generation_id()){
+    bool found = false;
+    for(RNN_Genome* g : islands[group_id]->get_genomes()){
+        if(g->get_generation_id() == generation_id){
+            found = true;
             break;
         }
         position++;
     }
-    return position;
+    if(found){
+        return position;
+    }
+    return -1;
 }
 
 

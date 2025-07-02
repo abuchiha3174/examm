@@ -464,7 +464,7 @@ string NeatSpeciationStrategy::generate_genome_size_values(RNN_Genome* new_genom
 /**
  * Get current position of genome in the population
  */
-int32_t NeatSpeciationStrategy::get_position_in_population(RNN_Genome* genome){
+int32_t NeatSpeciationStrategy::get_position_in_population(int32_t generation_id, int32_t group_id) {
     return -1;
 }
 

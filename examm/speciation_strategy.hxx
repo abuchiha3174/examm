@@ -131,7 +131,7 @@ class SpeciationStrategy {
      */
     virtual string generate_genome_size_values(RNN_Genome* new_genome, int32_t generated_genomes) = 0;
 
-    virtual int32_t get_position_in_population(RNN_Genome* genome) = 0;
+    virtual int32_t get_position_in_population(int32_t generation_id, int32_t group_id) = 0;
 
     virtual RNN_Genome* get_global_best_genome() = 0;
     virtual void initialize_population(function<void(int32_t, RNN_Genome*)>& mutate) = 0;
