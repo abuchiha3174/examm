@@ -316,7 +316,8 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
     // Log::info("insert to speciation strategy complete, at position: %d\n", insert_position);
 
     // If new genome becomes the new global best
-    if (patience > 0 && insert_position == 0) {
+    if (previous_best_generation_id >= 1 && previous_best_island_id >= 1 
+            && patience > 0 && insert_position == 0) {
         int32_t current_patience = genome_generation_id - previous_best_generation_id;
         if(current_patience > patience_rate){
             Log::info("previous global best generation id: %d\n", previous_best_generation_id);
@@ -356,7 +357,7 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
             patience = 0;
         }
     }
-    
+
     // write this genome to disk if it was a new best found genome
     if (save_genome_option.compare("all_best_genomes") == 0) {
         Log::info("save genome option compared, save genome option size: %d!\n", save_genome_option.size());
