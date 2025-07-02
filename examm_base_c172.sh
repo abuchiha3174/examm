@@ -7,7 +7,7 @@
 #SBATCH --mail-user=as3485@g.rit.edu
 #SBATCH --mail-type=ALL
 #SBATCH -t 24:00:00
-#SBATCH -p debug -n 36
+#SBATCH -p debug -n 16
 #SBATCH --mem-per-cpu=5000
 
 #module load module_future
@@ -18,8 +18,8 @@
 # spack load libtiff/gnxev37
 # spack load openmpi/xcunp5q
 
-EXAMM="/home/as3485/examm"
-MAX_GENOME=20000
+EXAMM="/home/as3485/one_nas/examm"
+MAX_GENOME=8000
 NUM_ISLAND=10
 DATASET="c172"
 
@@ -27,7 +27,7 @@ DATASET="c172"
 for folder in {0..9}
 do
     # Create full directory path with SLURM job ID included
-    exp_name="$EXAMM/results_debug/test/$DATASET/max_genome_${MAX_GENOME}_${SLURM_JOB_ID}/$NUM_ISLAND/$folder"
+    exp_name="$EXAMM/results_debug/test/$DATASET/max_genome_${MAX_GENOME}_patience_300_${SLURM_JOB_ID}/$NUM_ISLAND/$folder"
     
     mkdir -p "$exp_name"
     echo "Running iteration folder: $exp_name"
@@ -43,15 +43,13 @@ do
     --island_size 10 \
     --max_genomes $MAX_GENOME \
     --bp_iterations 10 \
-    --patience_rate 20 \
+    --patience 1 \
+    --patience_rate 300 \
     --possible_node_types simple UGRNN MGU GRU delta LSTM \
     --normalize min_max \
     --weight_update rmsprop \
     --std_message_level INFO \
     --file_message_level INFO \
-    --low_mutation_rate 0 \
-    --reduced_add_function 0 \
-    --patience 1 \
     --output_directory "$exp_name"
 
 done

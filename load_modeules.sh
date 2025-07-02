@@ -1,27 +1,45 @@
 #!/bin/bash
 
-# === Load modules with Spack ===
+echo "======================================"
+echo "🔧 Loading required modules with Spack"
+echo "======================================"
 
-# GCC (9.3)
-
+# Load modules
+echo "Loading GCC (9.3)..."
 spack load gcc/lhqcen5
 
-# CMake
+echo "Loading CMake..."
 spack load cmake/pbddesj
 
-# OpenMPI
+echo "Loading OpenMPI..."
 spack load openmpi/xcunp5q
 
-# libtiff
+echo "Loading libtiff..."
 spack load libtiff/gnxev37
 
-# === Build EXAMM ===
+echo "======================================"
+echo "📁 Setting up a safe TMPDIR"
+echo "======================================"
 
-# Create build directory if it doesn't exist
+export TMPDIR=$HOME/tmp
+mkdir -p $TMPDIR
+
+echo "======================================"
+echo "🏗️  Building EXAMM"
+echo "======================================"
+
+echo "Cleaning previous build directory..."
 rm -rf build
+
+echo "Creating new build directory..."
 mkdir build
 cd build
 
-# Run cmake and make
-cmake ..
-make 
+echo "Running CMake configuration with TMPDIR=$TMPDIR..."
+TMPDIR=$TMPDIR cmake ..
+
+echo "Compiling with make using TMPDIR=$TMPDIR..."
+TMPDIR=$TMPDIR make -j$(nproc)
+
+echo "✅ Build complete."
+echo "======================================"
