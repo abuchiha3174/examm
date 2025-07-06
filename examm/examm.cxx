@@ -326,7 +326,8 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
             Log::info("current global best generation id: %d\n", genome_generation_id);
             Log::info("current global best island id: %d\n", genome_group_id);
             if (patience == 1) {
-                Log::info("Current patience = %d\n", current_patience);
+                Log::info("Patience criteria exceeded: current patience = %d > patience_rate = %d",
+                    current_patience, patience_rate);
                 Log::info("Patience exceeded and pre-convergence found!\n");
                 Log::info("Decreasing the mutation_rate, intra_island_co_rate and inter_island_co_rate!\n");
 
