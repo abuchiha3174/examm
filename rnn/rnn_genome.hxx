@@ -178,6 +178,7 @@ class RNN_Genome {
     int32_t get_disabled_node_count_hidden_layer();
     int32_t get_number_weights_enabled_hidden_layer_node();
     int32_t get_enabled_number_weights();
+    int32_t get_all_enabled_node_count(int32_t node_type);
 
     void get_input_edges(
         int32_t node_innovation, vector<RNN_Edge*>& input_edges, vector<RNN_Recurrent_Edge*>& input_recurrent_edges
@@ -309,6 +310,8 @@ class RNN_Genome {
     void write_graphviz(string filename);
     void print_equations();
     void write_equations(ostream& outstream);
+
+    void write_manual_txt(const std::string& filename);
 
     RNN_Genome(string binary_filename);
     RNN_Genome(char* array, int32_t length);

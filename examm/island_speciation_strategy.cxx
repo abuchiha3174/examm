@@ -540,6 +540,7 @@ static const vector<string> size_metric_keys = {
     "Generation_ID",
     "Total_Number_Outputs",
     "Total_Number_Weight",
+    "Total_Number_Enabled_Weight",
     "Get_Number_Inputs",
     "Total_Genomes",
 };
@@ -669,6 +670,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
         int32_t total_number_hidden_layer_weights = 0;
         int32_t total_number_outputs = 0;
         int32_t total_number_weight = 0;
+        int32_t total_number_enabled_weight = 0;
         int32_t total_number_inputs = 0;
         int32_t generation_id = -1;
         double best_mse = -1;
@@ -693,14 +695,15 @@ string IslandSpeciationStrategy::get_size_information_values() {
             best_mae = g->get_best_validation_mae();
             generation_id = g->get_generation_id();
             total_number_outputs += g->get_number_outputs();
-            total_number_weight += g->get_enabled_number_weights();
+            total_number_weight += g->get_number_weights();
+            total_number_enabled_weight += g->get_enabled_number_weights();
             total_number_inputs += g->get_number_inputs();
             total_genomes++;
 
             for (std::string& node_type_str1 : possible_node_types) {
                 int32_t type_id = node_type_from_string(node_type_str1);
                 island_total_node_type_counts[type_id] += g->get_node_count(type_id);
-                island_enabled_node_type_counts[type_id] += g->get_enabled_node_count(type_id);
+                island_enabled_node_type_counts[type_id] += g->get_all_enabled_node_count(type_id);
             }
         }
 
@@ -719,6 +722,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
         info_value.append(std::to_string(generation_id) + ",");
         info_value.append(std::to_string(total_number_outputs) + ",");
         info_value.append(std::to_string(total_number_weight) + ",");
+        info_value.append(std::to_string(total_number_enabled_weight) + ",");
         info_value.append(std::to_string(total_number_inputs) + ",");
         info_value.append(std::to_string(total_genomes) + ",");
 
@@ -743,6 +747,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
         int32_t best_hidden_layer_weights = 0;
         int32_t best_number_outputs = 0;
         int32_t best_number_weights = 0;
+        int32_t best_number_enabled_weights = 0;
         int32_t best_number_inputs = 0;
         double best_best_mse = -1.0;
         double best_best_mae = -1.0;
@@ -763,7 +768,8 @@ string IslandSpeciationStrategy::get_size_information_values() {
             best_enabled_rec_edges = best->get_enabled_recurrent_edge_count();
             best_hidden_layer_weights = best->get_number_weights_enabled_hidden_layer_node();
             best_number_outputs = best->get_number_outputs();
-            best_number_weights = best->get_enabled_number_weights();
+            best_number_weights = best->get_number_weights();
+            best_number_enabled_weights = best->get_enabled_number_weights();
             best_number_inputs = best->get_number_inputs();
             best_best_mse = best->get_best_validation_mse();
             best_best_mae = best->get_best_validation_mae();
@@ -771,7 +777,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
             for (std::string& node_type_str : possible_node_types) {
                 int32_t type_id = node_type_from_string(node_type_str);
                 best_total_node_type_counts[type_id] = best->get_node_count(type_id);
-                best_enabled_node_type_counts[type_id] = best->get_enabled_node_count(type_id);
+                best_enabled_node_type_counts[type_id] = best->get_all_enabled_node_count(type_id);
             }
         }
 
@@ -790,6 +796,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
         info_value.append(std::to_string(best_gen_id) + ",");
         info_value.append(std::to_string(best_number_outputs) + ",");
         info_value.append(std::to_string(best_number_weights) + ",");
+        info_value.append(std::to_string(best_number_enabled_weights) + ",");
         info_value.append(std::to_string(best_number_inputs) + ",");
         info_value.append(std::to_string(total_best_genomes) + ",");
 
@@ -815,6 +822,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
     double global_best_mae = -1;
     int32_t global_total_outputs = 0;
     int32_t global_total_weights = 0;
+    int32_t global_total_enabled_weights = 0;
     int32_t global_total_inputs = 0;
     int32_t global_total_best_genomes = 1;
 
@@ -837,13 +845,14 @@ string IslandSpeciationStrategy::get_size_information_values() {
         global_best_mse = global_best->get_best_validation_mse();
         global_best_mae = global_best->get_best_validation_mae();
         global_total_outputs = global_best->get_number_outputs();
-        global_total_weights = global_best->get_enabled_number_weights();
+        global_total_weights = global_best->get_number_weights();
+        global_total_enabled_weights = global_best->get_enabled_number_weights();
         global_total_inputs = global_best->get_number_inputs();
 
         for (std::string& node_type_str : possible_node_types) {
             int32_t type_id = node_type_from_string(node_type_str);
             global_total_node_type_counts[type_id] = global_best->get_node_count(type_id);
-            global_enabled_node_type_counts[type_id] = global_best->get_enabled_node_count(type_id);
+            global_enabled_node_type_counts[type_id] = global_best->get_all_enabled_node_count(type_id);
         }
     }
 
@@ -862,6 +871,7 @@ string IslandSpeciationStrategy::get_size_information_values() {
     info_value.append(std::to_string(global_best_generation_id) + ",");
     info_value.append(std::to_string(global_total_outputs) + ",");
     info_value.append(std::to_string(global_total_weights) + ",");
+    info_value.append(std::to_string(global_total_enabled_weights) + ",");
     info_value.append(std::to_string(global_total_inputs) + ",");
     info_value.append(std::to_string(global_total_best_genomes) + ",");
 
@@ -893,6 +903,7 @@ string IslandSpeciationStrategy::get_best_genome_size_information_values() {
         int32_t best_hidden_layer_weights = 0;
         int32_t best_number_outputs = 0;
         int32_t best_number_weights = 0;
+        int32_t best_number_enabled_weights = 0;
         int32_t best_number_inputs = 0;
         double best_best_mse = -1.0;
         double best_best_mae = -1.0;
@@ -914,14 +925,15 @@ string IslandSpeciationStrategy::get_best_genome_size_information_values() {
             best_enabled_rec_edges = best->get_enabled_recurrent_edge_count();
             best_hidden_layer_weights = best->get_number_weights_enabled_hidden_layer_node();
             best_number_outputs = best->get_number_outputs();
-            best_number_weights = best->get_enabled_number_weights();
+            best_number_weights = best->get_number_weights();
+            best_number_enabled_weights = best->get_enabled_number_weights();
             best_number_inputs = best->get_number_inputs();
             best_best_mse = best->get_best_validation_mse();
             best_best_mae = best->get_best_validation_mae();
             for (std::string& node_type_str : possible_node_types) {
                 int32_t type_id = node_type_from_string(node_type_str);
                 best_total_node_type_counts[type_id] = best->get_node_count(type_id);
-                best_enabled_node_type_counts[type_id] = best->get_enabled_node_count(type_id);
+                best_enabled_node_type_counts[type_id] = best->get_all_enabled_node_count(type_id);
             }
         }
 
@@ -940,6 +952,7 @@ string IslandSpeciationStrategy::get_best_genome_size_information_values() {
         info_value.append(std::to_string(best_gen_id) + ",");
         info_value.append(std::to_string(best_number_outputs) + ",");
         info_value.append(std::to_string(best_number_weights) + ",");
+        info_value.append(std::to_string(best_number_enabled_weights) + ",");
         info_value.append(std::to_string(best_number_inputs) + ",");
         info_value.append(std::to_string(total_best_genomes) + ",");
         for (std::string& node_type_str : possible_node_types) {
@@ -968,6 +981,7 @@ string IslandSpeciationStrategy::get_global_best_genome_size_information_values(
     int32_t number_of_hidden_layer_weights = 0;
     int32_t number_of_outputs = 0;
     int32_t number_of_weights = 0;
+    int32_t number_of_enabled_weights = 0;
     int32_t number_of_inputs = 0;
     int32_t total_best_global_genomes = 1;
     double best_mse = -1;
@@ -990,7 +1004,8 @@ string IslandSpeciationStrategy::get_global_best_genome_size_information_values(
         enabled_rec_edge_count = best->get_enabled_recurrent_edge_count();
         number_of_hidden_layer_weights = best->get_number_weights_enabled_hidden_layer_node();
         number_of_outputs = best->get_number_outputs();
-        number_of_weights = best->get_enabled_number_weights();
+        number_of_weights = best->get_number_weights();
+        number_of_enabled_weights = best->get_enabled_number_weights();
         number_of_inputs = best->get_number_inputs();
         best_mse = best->get_best_validation_mse();
         best_mae = best->get_best_validation_mae();
@@ -998,7 +1013,7 @@ string IslandSpeciationStrategy::get_global_best_genome_size_information_values(
         for (std::string& node_type_str : possible_node_types) {
             int32_t type_id = node_type_from_string(node_type_str);
             total_node_type_counts[type_id] = best->get_node_count(type_id);
-            enabled_node_type_counts[type_id] = best->get_enabled_node_count(type_id);
+            enabled_node_type_counts[type_id] = best->get_all_enabled_node_count(type_id);
         }
     }
 
@@ -1017,6 +1032,7 @@ string IslandSpeciationStrategy::get_global_best_genome_size_information_values(
     info_value.append(std::to_string(global_best_generation_id) + ",");
     info_value.append(std::to_string(number_of_outputs) + ",");
     info_value.append(std::to_string(number_of_weights) + ",");
+    info_value.append(std::to_string(number_of_enabled_weights) + ",");
     info_value.append(std::to_string(number_of_inputs) + ",");
     info_value.append(std::to_string(total_best_global_genomes) + ",");
 
@@ -1083,6 +1099,7 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
     int32_t total_number_hidden_layer_weights = 0;
     int32_t total_number_outputs = 0;
     int32_t total_number_weight = 0;
+    int32_t total_number_enabled_weight = 0;
     int32_t total_number_inputs = 0;
     int32_t generation_id = -1;
     double best_mse = -1;
@@ -1104,14 +1121,15 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
     best_mae = g->get_best_validation_mae();
     generation_id = g->get_generation_id();
     total_number_outputs += g->get_number_outputs();
-    total_number_weight += g->get_enabled_number_weights();
+    total_number_weight += g->get_number_weights();
+    total_number_enabled_weight += g->get_enabled_number_weights();
     total_number_inputs += g->get_number_inputs();
     total_genomes++;
 
     for (std::string& node_type_str1 : possible_node_types) {
         int32_t type_id = node_type_from_string(node_type_str1);
         island_total_node_type_counts[type_id] += g->get_node_count(type_id);
-        island_enabled_node_type_counts[type_id] += g->get_enabled_node_count(type_id);
+        island_enabled_node_type_counts[type_id] += g->get_all_enabled_node_count(type_id);
     }
 
     // Append values in the same order as in size_metric_keys
@@ -1129,6 +1147,7 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
     info_value.append(std::to_string(generation_id) + ",");
     info_value.append(std::to_string(total_number_outputs) + ",");
     info_value.append(std::to_string(total_number_weight) + ",");
+    info_value.append(std::to_string(total_number_enabled_weight) + ",");
     info_value.append(std::to_string(total_number_inputs) + ",");
     info_value.append(std::to_string(total_genomes) + ",");
 
@@ -1155,6 +1174,7 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
     double global_best_mae = -1;
     int32_t global_total_outputs = 0;
     int32_t global_total_weights = 0;
+    int32_t global_total_enabled_weights = 0;
     int32_t global_total_inputs = 0;
     int32_t global_total_best_genomes = 1;
 
@@ -1177,13 +1197,14 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
         global_best_mse = global_best->get_best_validation_mse();
         global_best_mae = global_best->get_best_validation_mae();
         global_total_outputs = global_best->get_number_outputs();
-        global_total_weights = global_best->get_enabled_number_weights();
+        global_total_weights = global_best->get_number_weights();
+        global_total_enabled_weights = global_best->get_enabled_number_weights();
         global_total_inputs = global_best->get_number_inputs();
 
         for (std::string& node_type_str : possible_node_types) {
             int32_t type_id = node_type_from_string(node_type_str);
             global_total_node_type_counts[type_id] = global_best->get_node_count(type_id);
-            global_enabled_node_type_counts[type_id] = global_best->get_enabled_node_count(type_id);
+            global_enabled_node_type_counts[type_id] = global_best->get_all_enabled_node_count(type_id);
         }
     }
 
@@ -1202,6 +1223,7 @@ string IslandSpeciationStrategy::generate_genome_size_values(RNN_Genome* g, int3
     info_value.append(std::to_string(global_best_generation_id) + ",");
     info_value.append(std::to_string(global_total_outputs) + ",");
     info_value.append(std::to_string(global_total_weights) + ",");
+    info_value.append(std::to_string(global_total_enabled_weights) + ",");
     info_value.append(std::to_string(global_total_inputs) + ",");
     info_value.append(std::to_string(global_total_best_genomes) + ",");
 

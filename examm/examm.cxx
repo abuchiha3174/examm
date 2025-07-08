@@ -50,7 +50,7 @@ EXAMM::~EXAMM() {
 EXAMM::EXAMM(
     int32_t _island_size, int32_t _number_islands, int32_t _max_genomes, SpeciationStrategy* _speciation_strategy,
     WeightRules* _weight_rules, GenomeProperty* _genome_property, string _output_directory, string _save_genome_option, bool _generate_op_log, bool _generate_visualization_json,
-    int32_t _patience, int32_t _patience_rate
+    int32_t _patience, int32_t _patience_rate, int32_t patience_trigger_gen
 )
     : island_size(_island_size),
       number_islands(_number_islands),
@@ -63,7 +63,8 @@ EXAMM::EXAMM(
       generate_op_log(_generate_op_log),
       generate_visualization_json(_generate_visualization_json),
       patience(_patience),
-      patience_rate(_patience_rate)
+      patience_rate(_patience_rate),
+      patience_trigger_gen(patience_trigger_gen)
 {
     total_bp_epochs = 0;
     edge_innovation_count = 0;
@@ -316,7 +317,7 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
     // Log::info("insert to speciation strategy complete, at position: %d\n", insert_position);
 
     // If new genome becomes the new global best
-    if (genome_generation_id > 2000 && previous_best_generation_id >= 1 && previous_best_island_id >= 1 
+    if (genome_generation_id > patience_trigger_gen && previous_best_generation_id >= 1 && previous_best_island_id >= 1 
             && patience > 0 && insert_position == 0) {
         int32_t current_patience = genome_generation_id - previous_best_generation_id;
         if(current_patience > patience_rate){
@@ -326,7 +327,7 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
             Log::info("current global best generation id: %d\n", genome_generation_id);
             Log::info("current global best island id: %d\n", genome_group_id);
             if (patience == 1) {
-                Log::info("Patience criteria exceeded: current patience = %d > patience_rate = %d",
+                Log::info("Patience criteria exceeded: current patience = %d > patience_rate = %d\n",
                     current_patience, patience_rate);
                 Log::info("Patience exceeded and pre-convergence found!\n");
                 Log::info("Decreasing the mutation_rate, intra_island_co_rate and inter_island_co_rate!\n");
@@ -527,10 +528,14 @@ RNN_Genome* EXAMM::generate_genome() {
 
     // Generate Genome size log tracking
     Log::info("Generated New Genome\n");
-    string genome_values =
-        speciation_strategy->generate_genome_size_values(genome, speciation_strategy->get_generated_genomes());
-    (*generate_geneome_size_log_file) << genome_values << endl;
+    if(genome_size_log){
+        string genome_values =
+            speciation_strategy->generate_genome_size_values(genome, speciation_strategy->get_generated_genomes());
+        (*generate_geneome_size_log_file) << genome_values << endl;
 
+        // Saving the genome to txt file
+        genome->write_manual_txt(output_directory + "/" + "size_log"+ "/" + "generated_genome" + "_" + to_string(genome->get_generation_id()) + ".txt");
+    }
     return genome;
 }
 

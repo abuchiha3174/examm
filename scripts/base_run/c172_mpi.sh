@@ -24,7 +24,8 @@ mpirun -np 4 ./mpi/examm_mpi \
 --output_parameter_names $OUTPUT_PARAMETERS \
 --number_islands 10 \
 --island_size 10 \
---max_genomes 2000 \
+--patience_params "1 2000 300" \
+--max_genomes 5000 \
 --bp_iterations 5 \
 --num_mutations 2 \
 --normalize min_max \

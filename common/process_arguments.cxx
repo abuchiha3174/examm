@@ -32,12 +32,26 @@ EXAMM* generate_examm_from_arguments(
     get_argument(arguments, "--generate_visualization_json", false, generate_visualization_json);
 
     // getting patience check
-    int32_t patience;
-    get_argument(arguments, "--patience", false, patience);
-    Log::info("Patience is set to %d\n", patience);
-    int32_t patience_rate;
-    get_argument(arguments, "--patience_rate", false, patience_rate);
-    Log::info("Patience rate is set to %d\n", patience_rate);
+    std::vector<int32_t> patience_params;
+    std::string patience_param_string;
+    get_argument(arguments, "--patience_params", false, patience_param_string);
+    std::stringstream ss(patience_param_string);
+    int32_t val;
+    while (ss >> val) {
+        patience_params.push_back(val);
+        if (ss.peek() == ',' || ss.peek() == ' ') ss.ignore();
+    }
+
+
+    int32_t patience = (patience_params.size() > 0) ? patience_params[0] : -1;
+    Log::info("Patience type is set to: %d\n", patience);
+
+    int32_t patience_trigger_gen = (patience_params.size() > 1) ? patience_params[1] : -1;
+    Log::info("Patience will begin checking at generation: %d\n", patience_trigger_gen);
+
+    int32_t patience_rate = (patience_params.size() > 2) ? patience_params[2] : -1;
+    Log::info("Patience check interval is set to: every %d generations\n", patience_rate);
+
 
     Log::info(
         "Setting up examm with %d islands, island size %d, and max_genome %d\n", number_islands, island_size,
@@ -71,7 +85,7 @@ EXAMM* generate_examm_from_arguments(
 
     EXAMM* examm = new EXAMM(
         island_size, number_islands, max_genomes, speciation_strategy, weight_rules, genome_property, output_directory,
-        save_genome_option, generate_op_log, generate_visualization_json, patience, patience_rate
+        save_genome_option, generate_op_log, generate_visualization_json, patience, patience_rate, patience_trigger_gen
     );
     if (possible_node_types.size() > 0) {
         examm->set_possible_node_types(possible_node_types);

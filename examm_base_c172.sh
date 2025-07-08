@@ -43,8 +43,7 @@ do
     --island_size 10 \
     --max_genomes $MAX_GENOME \
     --bp_iterations 10 \
-    --patience 1 \
-    --patience_rate 300 \
+    --patience_params 1 2000 300\
     --possible_node_types simple UGRNN MGU GRU delta LSTM \
     --normalize min_max \
     --weight_update rmsprop \
