@@ -317,7 +317,7 @@ bool EXAMM::insert_genome(RNN_Genome* genome) {
     // Log::info("insert to speciation strategy complete, at position: %d\n", insert_position);
 
     // If new genome becomes the new global best
-    if (genome_generation_id > patience_trigger_gen && previous_best_generation_id >= 1 && previous_best_island_id >= 1 
+    if (genome_generation_id > patience_trigger_gen && previous_best_generation_id >= 1
             && patience > 0 && insert_position == 0) {
         int32_t current_patience = genome_generation_id - previous_best_generation_id;
         if(current_patience > patience_rate){
